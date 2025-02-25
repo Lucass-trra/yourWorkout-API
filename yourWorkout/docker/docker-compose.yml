@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: yourWorkout
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - yourWorkout_data:/var/lib/postgresql/data
+
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway-migrations
+    depends_on:
+      - postgres
+    command: [
+      "migrate",
+      "-url=jdbc:postgresql://postgres:5432/${DB_NAME}",
+      "-user=${DB_USER}",
+      "-password=${DB_PASSWORD}",
+      "-locations=filesystem:/flyway/sql"
+    ]
+    volumes:
+      - ../src/main/resources/db/migration:/flyway/sql
+
+volumes:
+  yourWorkout_data:
