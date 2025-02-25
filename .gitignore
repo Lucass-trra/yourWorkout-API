@@ -1,0 +1,30 @@
+### Diretórios de build ###
+/target/
+/build/
+
+### Diretórios e arquivos do Gradle ###
+.gradle
+gradle-app.setting
+gradle-wrapper.jar
+gradlew
+gradlew.bat
+
+### files from IntelliJ IDEA
+*.iml
+.idea/
+*.iws
+out/
+
+### Logs and temp files
+*.log
+hs_err_pid*
+
+### files from system
+.DS_Store
+Thumbs.db
+
+# specific configurations from Docker
+/docker/
+
+# credentials and password
+.env
