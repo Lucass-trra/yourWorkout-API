@@ -1,1 +1,0 @@
-ALTER TABLE "User" RENAME TO Users
