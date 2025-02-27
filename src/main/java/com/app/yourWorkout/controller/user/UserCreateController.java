@@ -3,6 +3,7 @@ package com.app.yourWorkout.controller.user;
 import com.app.yourWorkout.DTO.request.user.UserCreateRequest;
 import com.app.yourWorkout.DTO.response.UserReadResponse;
 import com.app.yourWorkout.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/user")
+@AllArgsConstructor
 public class UserCreateController {
     private final UserService userService;
-
-    public UserCreateController(UserService userService) {
-        this.userService = userService;
-    }
 
     //CREATE
     @PostMapping
