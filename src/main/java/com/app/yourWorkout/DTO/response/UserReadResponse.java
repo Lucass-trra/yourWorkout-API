@@ -1,5 +1,6 @@
 package com.app.yourWorkout.DTO.response;
 
+import com.app.yourWorkout.entities.User;
 import com.app.yourWorkout.enums.LevelOfExperience;
 import com.app.yourWorkout.enums.WorkoutGoal;
 
@@ -15,4 +16,16 @@ public record UserReadResponse(
         short height,
         short weight
 ) {
+    public static UserReadResponse from(User user) {
+        return new UserReadResponse(
+                user.getName(),
+                user.getEmail(),
+                user.getSex(),
+                user.getDateOfBirth(),
+                user.getLevelOfExperience(),
+                user.getWorkoutGoal(),
+                user.getHeight(),
+                user.getWeight()
+        );
+    }
 }

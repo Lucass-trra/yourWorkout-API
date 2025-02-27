@@ -15,6 +15,6 @@ public record UserUpdateRequest(
     LocalDate dateOfBirth,
     LevelOfExperience levelOfExperience,
     WorkoutGoal workoutGoal,
-    short height,
-    short weight
-) {}
+    Short height,
+    Short weight
+) { }
