@@ -13,8 +13,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.CascadeType;
+import lombok.NonNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -24,6 +27,8 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +36,15 @@ public class User {
     private int userId;
 
     @Column(name = "username",unique = true, nullable = false, length = 50)
+    @NonNull
     private String name;
 
     @Column(unique = true, nullable = false, length = 100)
+    @NonNull
     private String email;
 
     @Column(unique = true, nullable = false, length = 16)
+    @NonNull
     private String password;
 
     @Column(length = 20)
@@ -55,10 +63,10 @@ public class User {
 
     @Column
     // height in centimeters
-    private short height;
+    private Short height;
 
     @Column
-    private short weight;
+    private Short weight;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Workout> workoutSet = new HashSet<>();
