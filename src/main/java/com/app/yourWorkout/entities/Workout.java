@@ -11,8 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.CascadeType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +20,8 @@ import java.util.Set;
 @Table(name = "workout")
 @Getter
 @Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class Workout {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +30,15 @@ public class Workout {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @NonNull
     private User user;
 
     @Column(name = "workout_name", unique = true, nullable = false, length = 100)
+    @NonNull
     private String name;
 
     @Column(name = "iscurrent",nullable = false)
+    @NonNull
     private Boolean isCurrent;
 
     @Column(length = 1000)

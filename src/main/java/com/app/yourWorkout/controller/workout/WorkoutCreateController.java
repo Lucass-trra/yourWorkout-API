@@ -1,8 +1,9 @@
 package com.app.yourWorkout.controller.workout;
 
-import com.app.yourWorkout.DTO.request.workout.WorkoutRequest;
+import com.app.yourWorkout.DTO.request.workout.WorkoutCreateRequest;
 import com.app.yourWorkout.DTO.response.WorkoutReadResponse;
 import com.app.yourWorkout.service.WorkoutService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class WorkoutCreateController {
     //CREATE BY USER
     @PostMapping("user/{userId}")
     public ResponseEntity<WorkoutReadResponse> saveByUserId(@PathVariable int userId,
-                                                            @RequestBody WorkoutRequest workoutRequest)
+                                                            @Valid @RequestBody WorkoutCreateRequest workoutRequest)
     {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
