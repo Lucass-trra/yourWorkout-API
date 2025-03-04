@@ -17,11 +17,16 @@ public class ExerciseDeleteController {
     }
 
     //DELETE BY WORKOUT ID
-    @DeleteMapping("workout/{workoutId}/exercise/{exerciseId}")
-    public ResponseEntity<Void> deleteByWorkoutId(@PathVariable int workoutId,
-                                                  @PathVariable int exerciseId)
+    @DeleteMapping("id/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable int exerciseId)
     {
-        exerciseService.deleteByWorkoutId(exerciseId, workoutId);
+        exerciseService.deleteById(exerciseId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("name/{name}")
+    public ResponseEntity<Void> deleteByName(@PathVariable String name) {
+        exerciseService.deleteByName(name);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,10 +1,15 @@
 package com.app.yourWorkout.controller.exercise;
 
-import com.app.yourWorkout.DTO.request.exercise.ExerciseCreateRequest;
-import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
+import com.app.yourWorkout.DTO.request.exercise.ExerciseRequest;
+import com.app.yourWorkout.entities.Exercise;
 import com.app.yourWorkout.service.ExerciseService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("api/exercises")
@@ -16,10 +21,9 @@ public class ExerciseCreateController {
     }
 
     //CREATE BY WORKOUT ID
-    @PostMapping("workout/{workoutId}/exercise")
-    public ResponseEntity<ExerciseReadResponse> saveByWorkoutId(@PathVariable int workoutId,
-                                                                @RequestBody ExerciseCreateRequest exerciseRequest)
+    @PostMapping
+    public ResponseEntity<Exercise> saveExercise(@Valid @RequestBody ExerciseRequest exerciseRequest)
     {
-        return ResponseEntity.ok(exerciseService.saveByWorkoutId(workoutId, exerciseRequest));
+        return ResponseEntity.ok(exerciseService.saveExercise(exerciseRequest));
     }
 }

@@ -45,5 +45,5 @@ public class Workout {
     private String description;
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Exercise> exerciseSet = new HashSet<>();
+    Set<WorkoutExercise> exerciseSet = new HashSet<>();
 }

@@ -1,53 +1,82 @@
 package com.app.yourWorkout.service.impl;
 
-import com.app.yourWorkout.DTO.request.exercise.ExerciseCreateRequest;
-import com.app.yourWorkout.DTO.request.exercise.ExerciseUpdateRequest;
-import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
+import com.app.yourWorkout.DTO.request.exercise.ExerciseRequest;
 import com.app.yourWorkout.entities.Exercise;
+import com.app.yourWorkout.exception.DataNotFoundException;
+import com.app.yourWorkout.exception.DuplicateDataException;
+import com.app.yourWorkout.repository.ExerciseRepository;
 import com.app.yourWorkout.service.ExerciseService;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@AllArgsConstructor
 class ExerciseServiceImpl implements ExerciseService {
+    private final ExerciseRepository exerciseRepository;
+
     //READ GENERAL
     @Override
     public Exercise findById(int exerciseId) {
-        return null;
-    }
-
-    //READ BY WORKOUT ID
-    @Override
-    public ExerciseReadResponse findByWorkoutIdAndName(int workoutId, String name) {
-        return null;
+        return exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new DataNotFoundException("the exercise with ID: " + exerciseId + " was not found"));
     }
 
     @Override
-    public Page<ExerciseReadResponse> findAllByWorkoutId(int workoutId, Pageable pageable) {
-        return null;
+    public Exercise findByName(String name) {
+        return exerciseRepository.findByName(name)
+                .orElseThrow(() -> new DataNotFoundException("the exercise with name: " + name + " was not found"));
     }
 
-    //DELETE BY WORKOUT ID
     @Override
-    public void deleteByWorkoutId(int exerciseId, int workoutId) {
+    public void deleteById(int id) {
+        if(!exerciseRepository.existsById(id)) {
+            throw new DataNotFoundException("the exercise with id: " + id + " was not found to delete");
+        }
 
+        exerciseRepository.deleteById(id);
     }
 
-    //SAVE BY WORKOUT ID
     @Override
-    public ExerciseReadResponse saveByWorkoutId(int workoutId, ExerciseCreateRequest exerciseRequest) {
-        return null;
+    public void deleteByName(String name) {
+        if(!exerciseRepository.existsByName(name)) {
+            throw new DataNotFoundException("the exercise with name: " + name + " was not found to delete");
+        }
+
+        exerciseRepository.deleteByName(name);
     }
 
-    //UPDATE BY WORKOUT ID
     @Override
-    public ExerciseReadResponse updateByWorkoutId(int workoutId,
-                                                  int exerciseId,
-                                                  ExerciseUpdateRequest exerciseRequest)
-    {
-        return null;
+    public Exercise saveExercise(ExerciseRequest exerciseRequest) {
+        if(exerciseRepository.existsByName(exerciseRequest.name())) {
+            throw new DuplicateDataException("the exercise with name: " + exerciseRequest.name() + " already exists in database");
+        }
+
+        var newExercise = new Exercise(
+                exerciseRequest.name(),
+                exerciseRequest.primaryBodyPart(),
+                exerciseRequest.equipment(),
+                exerciseRequest.target(),
+                exerciseRequest.instructions()
+        );
+
+        newExercise.setPhoto(exerciseRequest.photo());
+        return exerciseRepository.save(newExercise);
+    }
+
+    @Override
+    public Exercise updateExercise(int exerciseId, ExerciseRequest exerciseRequest) {
+        var exercise = findById(exerciseId);
+
+        exercise.setName(exerciseRequest.name());
+        exercise.setPrimaryBodyPart(exerciseRequest.primaryBodyPart());
+        exercise.setEquipment(exerciseRequest.equipment());
+        exercise.setTarget(exerciseRequest.target());
+        exercise.setInstructions(exerciseRequest.instructions());
+        exercise.setPhoto(exerciseRequest.photo());
+
+        return exerciseRepository.save(exercise);
     }
 }

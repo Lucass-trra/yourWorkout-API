@@ -104,6 +104,7 @@ class WorkoutServiceImpl implements WorkoutService {
         var workout = this.workoutRepository.findByUserAndWorkoutId(user,workoutId)
                 .orElseThrow(()-> new DataNotFoundException("the workout: " + workoutId + " was not found for user: " + userId));
 
+
         if(workoutRequest.name() != null) workout.setName(workoutRequest.name());
         if(workoutRequest.isCurrent() != null) workout.setIsCurrent(workoutRequest.isCurrent());
         if(workoutRequest.description() != null) workout.setDescription(workoutRequest.description());
