@@ -2,10 +2,7 @@ package com.app.yourWorkout.associations;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -13,11 +10,13 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class WorkoutExerciseId implements Serializable {
     @Column(name = "workout_id")
-    private int workoutId;
+    @NonNull
+    private Integer workoutId;
 
     @Column(name = "exercise_id")
-    private int exerciseId;
+    @NonNull
+    private Integer exerciseId;
 }
