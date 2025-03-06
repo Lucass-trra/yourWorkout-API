@@ -1,8 +1,8 @@
 package com.app.yourWorkout.service.impl;
 
 import com.app.yourWorkout.DTO.BodyPartDTO;
+import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.BodyPart;
-import com.app.yourWorkout.entities.Exercise;
 import com.app.yourWorkout.exception.CollectionEmptyException;
 import com.app.yourWorkout.exception.DataAlreadyExistException;
 import com.app.yourWorkout.exception.DataNotFoundException;
@@ -11,8 +11,10 @@ import com.app.yourWorkout.repository.ExerciseRepository;
 import com.app.yourWorkout.service.BodyPartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,38 +23,45 @@ class BodyPartServiceImpl implements BodyPartService {
     private final ExerciseRepository exerciseRepository;
 
     @Override
+    @Transactional
     public BodyPartDTO findById(int id) {
-        var bodyPart = bodyPartRepository.findById(id)
+        return bodyPartRepository.findById(id)
+                .map(BodyPartDTO::from)
                 .orElseThrow(()-> new DataNotFoundException("the body part with id: " + id + " was not found"));
-
-        return new BodyPartDTO(bodyPart.getName());
     }
 
     @Override
+    @Transactional
     public BodyPartDTO findByName(String name) {
-        var bodyPart = bodyPartRepository.findByName(name)
+        return bodyPartRepository.findByName(name)
+                .map(BodyPartDTO::from)
                 .orElseThrow(()-> new DataNotFoundException("the body part with name: " + name + " was not found"));
-
-        return new BodyPartDTO(bodyPart.getName());
     }
 
     @Override
+    @Transactional
     public void deleteById(int id) {
-        if(!bodyPartRepository.existsById(id)) {
-            throw new DataNotFoundException("the body part with id: " + id + " was not found to delete");
-        }
-        bodyPartRepository.deleteById(id);
+        bodyPartRepository.findById(id).ifPresentOrElse(
+                bodyPartRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("the body part with id: " + id + " was not found to delete");
+                }
+        );
     }
 
     @Override
+    @Transactional
     public void deleteByName(String name) {
-        if(!bodyPartRepository.existsByName(name)) {
-            throw new DataNotFoundException("the body part with name: " + name + " was not found to delete");
-        }
-        bodyPartRepository.deleteByName(name);
+       bodyPartRepository.findByName(name).ifPresentOrElse(
+               bodyPartRepository::delete,
+               () -> {
+                   throw new DataNotFoundException("the body part with name: " + name + " was not found to delete");
+               }
+       );
     }
 
     @Override
+    @Transactional
     public BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO) {
         if(bodyPartRepository.existsByName(bodyPartDTO.name())) {
             throw new DataAlreadyExistException("the body part with name: " + bodyPartDTO.name() + " already exist to save in database");
@@ -63,31 +72,38 @@ class BodyPartServiceImpl implements BodyPartService {
     }
 
     @Override
-    public Exercise saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names) {
-        var exercise = exerciseRepository.findById(exerciseId)
+    @Transactional
+    public ExerciseReadResponse saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names) {
+        return exerciseRepository.findById(exerciseId)
+                .map(exercise -> {
+                    if(names.isEmpty())
+                        throw new CollectionEmptyException("list of body parts secondary names is empty");
+
+                    var secondaryBodyParts = bodyPartRepository.findAllByNameIn(names);
+
+                    if(secondaryBodyParts.isEmpty())
+                        throw new CollectionEmptyException("No valid body parts found for the given names.");
+
+                    exercise.getSecondaryBodyParts().addAll(secondaryBodyParts);
+
+                    return ExerciseReadResponse.from(
+                            exerciseRepository.save(exercise)
+                    );
+                })
                 .orElseThrow(() -> new DataNotFoundException("the exercise with id: " + exerciseId + " was not found"));
-
-        if(names.isEmpty())
-            throw new CollectionEmptyException("list of body parts secondary names is empty");
-
-        var secondaryBodyParts = bodyPartRepository.findAllByNameIn(names);
-
-        if(secondaryBodyParts.isEmpty())
-            throw new CollectionEmptyException("No valid body parts found for the given names.");
-
-        exercise.getSecondaryBodyParts().addAll(secondaryBodyParts);
-
-        return exerciseRepository.save(exercise);
     }
 
     @Override
+    @Transactional
     public BodyPartDTO updateBodyPart(int id, BodyPartDTO bodyPartDTO) {
-        var bodyPart = bodyPartRepository.findById(id)
+        return bodyPartRepository.findById(id)
+                .map(bodyPart -> {
+                    Optional.ofNullable(bodyPartDTO.name()).ifPresent(bodyPart::setName);
+
+                    return BodyPartDTO.from(
+                            bodyPartRepository.save(bodyPart)
+                    );
+                })
                 .orElseThrow(()-> new DataNotFoundException("the body part with id: " + id + " was not found to update"));
-
-        if(bodyPartDTO.name() != null) bodyPart.setName(bodyPartDTO.name());
-
-        var bodyPartSaved = bodyPartRepository.save(bodyPart);
-        return BodyPartDTO.from(bodyPartSaved);
     }
 }

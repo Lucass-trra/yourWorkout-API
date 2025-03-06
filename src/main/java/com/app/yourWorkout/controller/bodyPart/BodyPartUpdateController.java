@@ -18,7 +18,7 @@ public class BodyPartUpdateController {
     private final BodyPartService bodyPartService;
 
     //UPDATE
-    @PutMapping("{id}")
+    @PutMapping("id/{id}")
     public ResponseEntity<BodyPartDTO> updateBodyPart(@PathVariable int id,
                                                       @Valid @RequestBody BodyPartDTO bodyPartDTO){
         return ResponseEntity.ok(bodyPartService.updateBodyPart(id, bodyPartDTO));
