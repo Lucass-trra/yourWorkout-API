@@ -61,11 +61,4 @@ public class Exercise {
             inverseJoinColumns = @JoinColumn(name = "fk_bodypart_id")
     )
     private Set<BodyPart> secondaryBodyParts = new HashSet<>();
-
-    public void setPhoto(byte[] photo) {
-        if (photo == null) {
-            throw new IllegalArgumentException("Photo cannot be null");
-        }
-        this.photo = photo;
-    }
 }

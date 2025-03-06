@@ -1,13 +1,14 @@
 package com.app.yourWorkout.service;
 
 import com.app.yourWorkout.DTO.request.exercise.ExerciseRequest;
+import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.Exercise;
 
 public interface ExerciseService {
     //READ
-    Exercise findById(int id);
+    ExerciseReadResponse findById(int id);
 
-    Exercise findByName(String name);
+    ExerciseReadResponse findByName(String name);
 
     //DELETE
     void deleteById(int id);
@@ -15,8 +16,8 @@ public interface ExerciseService {
     void deleteByName(String name);
 
     //CREATE
-    Exercise saveExercise(ExerciseRequest exerciseRequest);
+    ExerciseReadResponse saveExercise(ExerciseRequest exerciseRequest);
 
     //UPDATE
-    Exercise updateExercise(int exerciseId, ExerciseRequest exerciseRequest);
+    ExerciseReadResponse updateExercise(int exerciseId, ExerciseRequest exerciseRequest);
 }

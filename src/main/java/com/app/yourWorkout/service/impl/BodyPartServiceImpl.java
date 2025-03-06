@@ -23,19 +23,17 @@ class BodyPartServiceImpl implements BodyPartService {
     private final ExerciseRepository exerciseRepository;
 
     @Override
-    @Transactional
     public BodyPartDTO findById(int id) {
         return bodyPartRepository.findById(id)
                 .map(BodyPartDTO::from)
-                .orElseThrow(()-> new DataNotFoundException("the body part with id: " + id + " was not found"));
+                .orElseThrow(()-> new DataNotFoundException("the body part: " + id + " was not found"));
     }
 
     @Override
-    @Transactional
     public BodyPartDTO findByName(String name) {
         return bodyPartRepository.findByName(name)
                 .map(BodyPartDTO::from)
-                .orElseThrow(()-> new DataNotFoundException("the body part with name: " + name + " was not found"));
+                .orElseThrow(()-> new DataNotFoundException("the body part: " + name + " was not found"));
     }
 
     @Override
@@ -44,7 +42,7 @@ class BodyPartServiceImpl implements BodyPartService {
         bodyPartRepository.findById(id).ifPresentOrElse(
                 bodyPartRepository::delete,
                 () -> {
-                    throw new DataNotFoundException("the body part with id: " + id + " was not found to delete");
+                    throw new DataNotFoundException("the body part: " + id + " was not found to delete");
                 }
         );
     }
@@ -55,7 +53,7 @@ class BodyPartServiceImpl implements BodyPartService {
        bodyPartRepository.findByName(name).ifPresentOrElse(
                bodyPartRepository::delete,
                () -> {
-                   throw new DataNotFoundException("the body part with name: " + name + " was not found to delete");
+                   throw new DataNotFoundException("the body part: " + name + " was not found to delete");
                }
        );
     }
@@ -64,7 +62,7 @@ class BodyPartServiceImpl implements BodyPartService {
     @Transactional
     public BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO) {
         if(bodyPartRepository.existsByName(bodyPartDTO.name())) {
-            throw new DataAlreadyExistException("the body part with name: " + bodyPartDTO.name() + " already exist to save in database");
+            throw new DataAlreadyExistException("the body part: " + bodyPartDTO.name() + " already exist to save in database");
         }
         var bodyPartSaved = bodyPartRepository.save(new BodyPart(bodyPartDTO.name()));
 
@@ -90,7 +88,7 @@ class BodyPartServiceImpl implements BodyPartService {
                             exerciseRepository.save(exercise)
                     );
                 })
-                .orElseThrow(() -> new DataNotFoundException("the exercise with id: " + exerciseId + " was not found"));
+                .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found"));
     }
 
     @Override
@@ -104,6 +102,6 @@ class BodyPartServiceImpl implements BodyPartService {
                             bodyPartRepository.save(bodyPart)
                     );
                 })
-                .orElseThrow(()-> new DataNotFoundException("the body part with id: " + id + " was not found to update"));
+                .orElseThrow(()-> new DataNotFoundException("the body part: " + id + " was not found to update"));
     }
 }

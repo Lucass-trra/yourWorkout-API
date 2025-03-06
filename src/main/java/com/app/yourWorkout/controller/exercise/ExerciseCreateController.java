@@ -6,13 +6,11 @@ import com.app.yourWorkout.service.ExerciseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("api/exercises")
 public class ExerciseCreateController {
     private final ExerciseService exerciseService;
 
@@ -21,7 +19,7 @@ public class ExerciseCreateController {
     }
 
     //CREATE BY WORKOUT ID
-    @PostMapping
+    @PostMapping("api/exercises")
     public ResponseEntity<Exercise> saveExercise(@Valid @RequestBody ExerciseRequest exerciseRequest)
     {
         return ResponseEntity.ok(exerciseService.saveExercise(exerciseRequest));

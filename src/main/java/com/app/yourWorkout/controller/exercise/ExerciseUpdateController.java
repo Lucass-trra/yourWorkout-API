@@ -6,14 +6,12 @@ import com.app.yourWorkout.service.ExerciseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("api/exercises")
 public class ExerciseUpdateController {
     private final ExerciseService exerciseService;
 
@@ -22,7 +20,7 @@ public class ExerciseUpdateController {
     }
 
     //UPDATE BY WORKOUT ID
-    @PutMapping("id/{id}")
+    @PutMapping("api/exercises/id/{id}")
     public ResponseEntity<Exercise> updateExercise(@PathVariable int exerciseId,
                                                    @Valid @RequestBody ExerciseRequest exerciseRequest)
     {

@@ -1,16 +1,18 @@
 package com.app.yourWorkout.service.impl;
 
 import com.app.yourWorkout.DTO.request.exercise.ExerciseRequest;
+import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.Exercise;
 import com.app.yourWorkout.exception.DataNotFoundException;
 import com.app.yourWorkout.exception.DuplicateDataException;
 import com.app.yourWorkout.repository.ExerciseRepository;
 import com.app.yourWorkout.service.ExerciseService;
-
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -19,39 +21,48 @@ class ExerciseServiceImpl implements ExerciseService {
 
     //READ GENERAL
     @Override
-    public Exercise findById(int exerciseId) {
+    @Transactional
+    public ExerciseReadResponse findById(int exerciseId) {
         return exerciseRepository.findById(exerciseId)
-                .orElseThrow(() -> new DataNotFoundException("the exercise with ID: " + exerciseId + " was not found"));
+                .map(ExerciseReadResponse::from)
+                .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found"));
     }
 
     @Override
-    public Exercise findByName(String name) {
+    @Transactional
+    public ExerciseReadResponse findByName(String name) {
         return exerciseRepository.findByName(name)
-                .orElseThrow(() -> new DataNotFoundException("the exercise with name: " + name + " was not found"));
+                .map(ExerciseReadResponse::from)
+                .orElseThrow(() -> new DataNotFoundException("the exercise: " + name + " was not found"));
     }
 
     @Override
+    @Transactional
     public void deleteById(int id) {
-        if(!exerciseRepository.existsById(id)) {
-            throw new DataNotFoundException("the exercise with id: " + id + " was not found to delete");
-        }
-
-        exerciseRepository.deleteById(id);
+        exerciseRepository.findById(id).ifPresentOrElse(
+                exerciseRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("the exercise: " + id + " was not found to delete");
+                }
+        );
     }
 
     @Override
+    @Transactional
     public void deleteByName(String name) {
-        if(!exerciseRepository.existsByName(name)) {
-            throw new DataNotFoundException("the exercise with name: " + name + " was not found to delete");
-        }
-
-        exerciseRepository.deleteByName(name);
+        exerciseRepository.findByName(name).ifPresentOrElse(
+                exerciseRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("the exercise: " + name + " was not found to delete");
+                }
+        );
     }
 
     @Override
-    public Exercise saveExercise(ExerciseRequest exerciseRequest) {
+    @Transactional
+    public ExerciseReadResponse saveExercise(ExerciseRequest exerciseRequest) {
         if(exerciseRepository.existsByName(exerciseRequest.name())) {
-            throw new DuplicateDataException("the exercise with name: " + exerciseRequest.name() + " already exists in database");
+            throw new DuplicateDataException("the exercise: " + exerciseRequest.name() + " already exists in database");
         }
 
         var newExercise = new Exercise(
@@ -61,22 +72,29 @@ class ExerciseServiceImpl implements ExerciseService {
                 exerciseRequest.target(),
                 exerciseRequest.instructions()
         );
+        Optional.ofNullable(exerciseRequest.photo()).ifPresent(newExercise::setPhoto);
 
-        newExercise.setPhoto(exerciseRequest.photo());
-        return exerciseRepository.save(newExercise);
+        return ExerciseReadResponse.from(
+                exerciseRepository.save(newExercise)
+        );
     }
 
     @Override
-    public Exercise updateExercise(int exerciseId, ExerciseRequest exerciseRequest) {
-        var exercise = findById(exerciseId);
+    @Transactional
+    public ExerciseReadResponse updateExercise(int exerciseId, ExerciseRequest exerciseRequest) {
+        return exerciseRepository.findById(exerciseId)
+                .map(exercise -> {
+                    exercise.setName(exerciseRequest.name());
+                    exercise.setPrimaryBodyPart(exerciseRequest.primaryBodyPart());
+                    exercise.setEquipment(exerciseRequest.equipment());
+                    exercise.setTarget(exerciseRequest.target());
+                    exercise.setInstructions(exerciseRequest.instructions());
+                    exercise.setPhoto(exerciseRequest.photo());
 
-        exercise.setName(exerciseRequest.name());
-        exercise.setPrimaryBodyPart(exerciseRequest.primaryBodyPart());
-        exercise.setEquipment(exerciseRequest.equipment());
-        exercise.setTarget(exerciseRequest.target());
-        exercise.setInstructions(exerciseRequest.instructions());
-        exercise.setPhoto(exerciseRequest.photo());
-
-        return exerciseRepository.save(exercise);
+                    return ExerciseReadResponse.from(
+                            exerciseRepository.save(exercise)
+                    );
+                })
+                .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found to update"));
     }
 }
