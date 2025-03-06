@@ -12,6 +12,7 @@ import com.app.yourWorkout.repository.WorkoutRepository;
 import com.app.yourWorkout.service.WorkoutExerciseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -61,19 +62,21 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
     }
 
     @Override
+    @Transactional
     public void deleteByWorkoutAndExercise(int workoutId, int exerciseId) {
         var workoutExerciseId = new WorkoutExerciseId(workoutId, exerciseId);
 
-        var workoutExercise = workoutExerciseRepository.findById(workoutExerciseId)
-                .orElseThrow(() -> {
+        workoutExerciseRepository.findById(workoutExerciseId).ifPresentOrElse(
+                workoutExerciseRepository::delete,
+                () -> {
                     verifyEntityExistence(workoutId, exerciseId);
-                    return new DataNotFoundException("The exercise " + exerciseId + " does not belong to workout " + workoutId + ".");
-                });
-
-        workoutExerciseRepository.delete(workoutExercise);
+                    throw new DataNotFoundException("The exercise " + exerciseId + " does not belong to workout " + workoutId + ".");
+                }
+        );
     }
 
     @Override
+    @Transactional
     public WorkoutExerciseReadResponse saveWorkoutExercise(int workoutId, int exerciseId, WorkoutExerciseRequest workoutExerciseRequest) {
         var workout = workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new DataNotFoundException("The workout: " + workoutId + " was not found"));
@@ -87,30 +90,32 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
             throw new DuplicateDataException("The exercise: " + exerciseId + " already exists for workout: " + workoutId);
         }
 
-        var newWorkoutExercise = new WorkoutExercise(workoutExerciseId, workout, exercise);
-
-        var workoutExerciseSaved = workoutExerciseRepository.save(
-                verifyPossibleNullFields(newWorkoutExercise, workoutExerciseRequest)
+        return WorkoutExerciseReadResponse.from(
+                workoutExerciseRepository.save(
+                        verifyPossibleNullFields(
+                                new WorkoutExercise(workoutExerciseId, workout, exercise),
+                                workoutExerciseRequest)
+                )
         );
-
-        return WorkoutExerciseReadResponse.from(workoutExerciseSaved);
     }
 
     @Override
+    @Transactional
     public WorkoutExerciseReadResponse updateWorkoutExercise(int workoutId, int exerciseId, WorkoutExerciseRequest workoutExerciseRequest) {
         var workoutExerciseId = new WorkoutExerciseId(workoutId, exerciseId);
 
-        var workoutExercise = workoutExerciseRepository.findById(workoutExerciseId)
+        return workoutExerciseRepository.findById(workoutExerciseId)
+                .map(workoutExercise ->
+                        WorkoutExerciseReadResponse.from(
+                                workoutExerciseRepository.save(
+                                        verifyPossibleNullFields(workoutExercise, workoutExerciseRequest)
+                                )
+                        )
+                )
                 .orElseThrow(() -> {
                     verifyEntityExistence(workoutId, exerciseId);
                     return new DataNotFoundException("The exercise " + exerciseId + " does not belong to workout " + workoutId + ".");
                 });
-
-        var updatedWorkoutExercise = workoutExerciseRepository.save(
-                verifyPossibleNullFields(workoutExercise, workoutExerciseRequest)
-        );
-
-        return WorkoutExerciseReadResponse.from(updatedWorkoutExercise);
     }
 }
 
