@@ -9,91 +9,102 @@ import com.app.yourWorkout.repository.UserRepository;
 import com.app.yourWorkout.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
-    //READ
     @Override
     public UserReadResponse findById(int id) {
-        var user = userRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("user with id: " + id + " was not found"));
-
-       return UserReadResponse.from(user);
+        return userRepository.findById(id)
+                .map(UserReadResponse::from)
+                .orElseThrow(() -> new DataNotFoundException("user with ID: " + id + " was not found"));
     }
 
     @Override
     public UserReadResponse findByUsername(String username) {
-        var user = userRepository.findByName(username)
-                .orElseThrow(() -> new DataNotFoundException("user with name: " + username + " was not found"));
-
-        return UserReadResponse.from(user);
+        return userRepository.findByName(username)
+                .map(UserReadResponse::from)
+                .orElseThrow(() -> new DataNotFoundException("user with name" + username + " was not found"));
     }
 
     @Override
     public UserReadResponse findByEmail(String email) {
-        var user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
+                .map(UserReadResponse::from)
                 .orElseThrow(() -> new DataNotFoundException("user with email: " + email + " was not found"));
-
-        return UserReadResponse.from(user);
     }
 
-    //DELETE
     @Override
+    @Transactional
     public void deleteById(int id) {
-        if (!userRepository.existsById(id)) {
-            throw new DataNotFoundException("User with id: " + id + " was not found to delete");
-        }
-        userRepository.deleteById(id);
+        userRepository.findById(id).ifPresentOrElse(
+                userRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("user with id: " + id + " was not found to delete");
+                }
+        );
     }
 
     @Override
+    @Transactional
     public void deleteByUsername(String username) {
-        if (!userRepository.existsByName(username)) {
-            throw new DataNotFoundException("User with name: " + username + " was not found to delete");
-        }
-        userRepository.deleteByName(username);
+        userRepository.findByName(username).ifPresentOrElse(
+                userRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("user with username: " + username + " was not found to delete");
+                }
+        );
     }
 
     @Override
+    @Transactional
     public void deleteByEmail(String email) {
-        if (!userRepository.existsByEmail(email)) {
-            throw new DataNotFoundException("User with email: " + email + " was not found to delete");
-        }
-        userRepository.deleteByEmail(email);
+        userRepository.findByEmail(email).ifPresentOrElse(
+                userRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("user with email: " + email + " was not found to delete");
+                }
+        );
     }
 
-    //CREATE
     @Override
+    @Transactional
     public UserReadResponse saveUser(String username, String email, String password) {
         if (userRepository.existsByName(username)) {
             throw new DataAlreadyExistException("The user with username: " + username + " already exists in the database");
         }
 
-        var userSaved = userRepository.save(new User(username,email,password));
-
-        return UserReadResponse.from(userSaved);
+        return UserReadResponse.from(
+                userRepository.save(
+                        new User(username,email,password)
+                )
+        );
     }
-    //UPDATE
+
     @Override
+    @Transactional
     public UserReadResponse updateUser(int id, UserUpdateRequest userRequest) {
-        var user = userRepository.findById(id)
+        return userRepository.findById(id)
+                .map(user -> {
+                    Optional.ofNullable(userRequest.name()).ifPresent(user::setName);
+                    Optional.ofNullable(userRequest.email()).ifPresent(user::setEmail);
+                    Optional.ofNullable(userRequest.password()).ifPresent(user::setPassword);
+                    Optional.ofNullable(userRequest.sex()).ifPresent(user::setSex);
+                    Optional.ofNullable(userRequest.dateOfBirth()).ifPresent(user::setDateOfBirth);
+                    Optional.ofNullable(userRequest.levelOfExperience()).ifPresent(user::setLevelOfExperience);
+                    Optional.ofNullable(userRequest.workoutGoal()).ifPresent(user::setWorkoutGoal);
+                    Optional.ofNullable(userRequest.height()).ifPresent(user::setHeight);
+                    Optional.ofNullable(userRequest.weight()).ifPresent(user::setWeight);
+
+                    return UserReadResponse.from(
+                            userRepository.save(user)
+                    );
+                })
                 .orElseThrow(() -> new DataNotFoundException("user with id: " + id + " was not found to update"));
-
-        if(userRequest.name() != null) user.setName(userRequest.name());
-        if(userRequest.email() != null) user.setEmail(userRequest.email());
-        if(userRequest.password() != null) user.setPassword(userRequest.password());
-        if(userRequest.sex() != null) user.setSex(userRequest.sex());
-        if(userRequest.dateOfBirth() != null) user.setDateOfBirth(userRequest.dateOfBirth());
-        if(userRequest.levelOfExperience() != null) user.setLevelOfExperience(userRequest.levelOfExperience());
-        if(userRequest.workoutGoal() != null) user.setWorkoutGoal(userRequest.workoutGoal());
-        if(userRequest.height() != null) user.setHeight(userRequest.height());
-        if(userRequest.weight() != null) user.setWeight(userRequest.weight());
-
-        var userSaved = userRepository.save(user);
-
-        return UserReadResponse.from(userSaved);
     }
 }

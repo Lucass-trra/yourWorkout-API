@@ -64,9 +64,12 @@ class BodyPartServiceImpl implements BodyPartService {
         if(bodyPartRepository.existsByName(bodyPartDTO.name())) {
             throw new DataAlreadyExistException("the body part: " + bodyPartDTO.name() + " already exist to save in database");
         }
-        var bodyPartSaved = bodyPartRepository.save(new BodyPart(bodyPartDTO.name()));
 
-        return BodyPartDTO.from(bodyPartSaved);
+        return BodyPartDTO.from(
+                bodyPartRepository.save(
+                        new BodyPart(bodyPartDTO.name())
+                )
+        );
     }
 
     @Override
