@@ -29,7 +29,6 @@ class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    @Transactional
     public ExerciseReadResponse findByName(String name) {
         return exerciseRepository.findByName(name)
                 .map(ExerciseReadResponse::from)
@@ -84,6 +83,9 @@ class ExerciseServiceImpl implements ExerciseService {
     public ExerciseReadResponse updateExercise(int exerciseId, ExerciseRequest exerciseRequest) {
         return exerciseRepository.findById(exerciseId)
                 .map(exercise -> {
+                    if(exerciseRepository.existsByName(exerciseRequest.name())) {
+                        throw new DuplicateDataException("the exercise: " + exerciseRequest.name() + " already exists, can not update it");
+                    }
                     exercise.setName(exerciseRequest.name());
                     exercise.setPrimaryBodyPart(exerciseRequest.primaryBodyPart());
                     exercise.setEquipment(exerciseRequest.equipment());

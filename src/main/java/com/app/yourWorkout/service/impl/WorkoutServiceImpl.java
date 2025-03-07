@@ -25,7 +25,7 @@ class WorkoutServiceImpl implements WorkoutService {
     private final UserRepository userRepository;
 
     private User getUserById(int userId) {
-        return this.userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(()-> new DataNotFoundException("the user: " + userId + " was not found"));
     }
 
@@ -33,10 +33,9 @@ class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional(readOnly = true)
     public WorkoutReadResponse findById(int id) {
-        var workout = this.workoutRepository.findById(id)
+        return workoutRepository.findById(id)
+                .map(WorkoutReadResponse::from)
                 .orElseThrow(()-> new DataNotFoundException("the workout: " + id + " was not found"));
-
-        return WorkoutReadResponse.from(workout);
     }
 
     //READ BY USER
@@ -45,17 +44,16 @@ class WorkoutServiceImpl implements WorkoutService {
     public WorkoutReadResponse findByUserIdAndName(int userId, String name) {
         var user = getUserById(userId);
 
-        var workout = this.workoutRepository.findByUserAndName(user, name)
+        return workoutRepository.findByUserAndName(user, name)
+                .map(WorkoutReadResponse::from)
                 .orElseThrow(()-> new DataNotFoundException("the workout: " + name + " was not found for user: " + userId));
-
-        return WorkoutReadResponse.from(workout);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<WorkoutReadResponse> findAllByUserId(int userId, Pageable pageable) {
         var user = getUserById(userId);
-        var workoutPage = this.workoutRepository.findAllByUser(user, pageable);
+        var workoutPage = workoutRepository.findAllByUser(user, pageable);
 
         if(workoutPage.isEmpty()) {
             throw new CollectionEmptyException("there are no workouts for user with id: " + userId);
@@ -70,11 +68,12 @@ class WorkoutServiceImpl implements WorkoutService {
     public void deleteByUserId(int userId, int workoutId) {
         var user = getUserById(userId);
 
-        if(!this.workoutRepository.existsByUserAndWorkoutId(user, workoutId)) {
-            throw new DataNotFoundException("the workout: " + workoutId + " was not found to user: " + userId + " to delete");
-        }
-
-        this.workoutRepository.deleteByUserAndWorkoutId(user, workoutId);
+        workoutRepository.findByUserAndWorkoutId(user, workoutId).ifPresentOrElse(
+                workoutRepository::delete,
+                () -> {
+                    throw new DataNotFoundException("the workout: " + workoutId + " was not found to delete");
+                }
+        );
     }
 
     //CREATE BY USER
@@ -83,16 +82,16 @@ class WorkoutServiceImpl implements WorkoutService {
     public WorkoutReadResponse saveByUserId(int userId, WorkoutCreateRequest workoutRequest) {
         var user = getUserById(userId);
 
-        if(this.workoutRepository.existsByUserAndName(user, workoutRequest.name())) {
+        if(workoutRepository.existsByUserAndName(user, workoutRequest.name())) {
             throw new DuplicateDataException("the workout: " + workoutRequest.name() + " already exists for user: " + userId);
         }
 
         var newWorkout = new Workout(user, workoutRequest.name(), workoutRequest.isCurrent());
         if(workoutRequest.description() != null) newWorkout.setDescription(workoutRequest.description());
 
-        var savedWorkout = this.workoutRepository.save(newWorkout);
-
-        return WorkoutReadResponse.from(savedWorkout);
+        return WorkoutReadResponse.from(
+                workoutRepository.save(newWorkout)
+        );
     }
 
     //UPDATE BY USER
@@ -101,16 +100,19 @@ class WorkoutServiceImpl implements WorkoutService {
     public WorkoutReadResponse updateByUserId(int userId, int workoutId, WorkoutUpdateRequest workoutRequest) {
         var user = getUserById(userId);
 
-        var workout = this.workoutRepository.findByUserAndWorkoutId(user,workoutId)
-                .orElseThrow(()-> new DataNotFoundException("the workout: " + workoutId + " was not found for user: " + userId));
+        var workout = workoutRepository.findByUserAndWorkoutId(user,workoutId)
+                .orElseThrow(()-> new DataNotFoundException("the workout: " + workoutId + " was not found for user: " + user.getName()));
 
+        if(workoutRepository.existsByUserAndName(user, workoutRequest.name())) {
+          throw new DuplicateDataException("the workout: " + workoutRequest.name() + " already exists for user: " + user.getName() + ", can not update it");
+        }
 
         if(workoutRequest.name() != null) workout.setName(workoutRequest.name());
         if(workoutRequest.isCurrent() != null) workout.setIsCurrent(workoutRequest.isCurrent());
         if(workoutRequest.description() != null) workout.setDescription(workoutRequest.description());
 
-        var updatedWorkout = this.workoutRepository.save(workout);
-
-        return WorkoutReadResponse.from(updatedWorkout);
+        return WorkoutReadResponse.from(
+                workoutRepository.save(workout)
+        );
     }
 }

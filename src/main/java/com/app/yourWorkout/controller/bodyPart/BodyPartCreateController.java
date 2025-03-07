@@ -1,6 +1,7 @@
 package com.app.yourWorkout.controller.bodyPart;
 
 import com.app.yourWorkout.DTO.BodyPartDTO;
+import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.Exercise;
 import com.app.yourWorkout.service.BodyPartService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class BodyPartCreateController {
     }
 
     @PostMapping("secondaryBodyParts/exercise/{id}")
-    public ResponseEntity<Exercise> saveSecondaryBodyPartsByExercise(@PathVariable int exerciseId,
-                                                                     @Valid
+    public ResponseEntity<ExerciseReadResponse> saveSecondaryBodyPartsByExercise(@PathVariable int exerciseId,
+                                                                                 @Valid
                                                                      @RequestBody
                                                                      List<String> secondaryBodyPartNames)
     {

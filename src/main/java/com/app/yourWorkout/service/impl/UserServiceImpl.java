@@ -5,6 +5,7 @@ import com.app.yourWorkout.DTO.response.UserReadResponse;
 import com.app.yourWorkout.entities.User;
 import com.app.yourWorkout.exception.DataAlreadyExistException;
 import com.app.yourWorkout.exception.DataNotFoundException;
+import com.app.yourWorkout.exception.DuplicateDataException;
 import com.app.yourWorkout.repository.UserRepository;
 import com.app.yourWorkout.service.UserService;
 import lombok.AllArgsConstructor;
@@ -91,6 +92,9 @@ class UserServiceImpl implements UserService {
     public UserReadResponse updateUser(int id, UserUpdateRequest userRequest) {
         return userRepository.findById(id)
                 .map(user -> {
+                    if(userRepository.existsByName(userRequest.name())) {
+                        throw new DuplicateDataException("the user: " + userRequest.name() + " already exists, can not update him");
+                    }
                     Optional.ofNullable(userRequest.name()).ifPresent(user::setName);
                     Optional.ofNullable(userRequest.email()).ifPresent(user::setEmail);
                     Optional.ofNullable(userRequest.password()).ifPresent(user::setPassword);

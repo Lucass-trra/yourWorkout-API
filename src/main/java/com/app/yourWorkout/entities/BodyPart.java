@@ -25,7 +25,7 @@ public class BodyPart {
     @Column(name = "bodypart_id")
     private int id;
 
-    @Column(name = "bodypart_name", nullable = false, length = 50)
+    @Column(unique = true, name = "bodypart_name", nullable = false, length = 50)
     @NonNull
     private String name;
 }

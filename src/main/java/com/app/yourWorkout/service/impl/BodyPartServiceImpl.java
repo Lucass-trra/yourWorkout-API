@@ -6,6 +6,7 @@ import com.app.yourWorkout.entities.BodyPart;
 import com.app.yourWorkout.exception.CollectionEmptyException;
 import com.app.yourWorkout.exception.DataAlreadyExistException;
 import com.app.yourWorkout.exception.DataNotFoundException;
+import com.app.yourWorkout.exception.DuplicateDataException;
 import com.app.yourWorkout.repository.BodyPartRepository;
 import com.app.yourWorkout.repository.ExerciseRepository;
 import com.app.yourWorkout.service.BodyPartService;
@@ -99,6 +100,10 @@ class BodyPartServiceImpl implements BodyPartService {
     public BodyPartDTO updateBodyPart(int id, BodyPartDTO bodyPartDTO) {
         return bodyPartRepository.findById(id)
                 .map(bodyPart -> {
+                    if(bodyPartRepository.existsByName(bodyPartDTO.name())) {
+                        throw new DuplicateDataException("the body part: " + bodyPartDTO.name() + " already exists, can not update it");
+                    }
+
                     Optional.ofNullable(bodyPartDTO.name()).ifPresent(bodyPart::setName);
 
                     return BodyPartDTO.from(
