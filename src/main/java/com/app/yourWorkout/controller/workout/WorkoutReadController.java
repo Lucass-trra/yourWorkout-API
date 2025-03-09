@@ -2,6 +2,7 @@ package com.app.yourWorkout.controller.workout;
 
 import com.app.yourWorkout.DTO.response.WorkoutReadResponse;
 import com.app.yourWorkout.service.WorkoutService;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/workouts")
+@AllArgsConstructor
 public class WorkoutReadController {
     private final WorkoutService workoutService;
-
-    public WorkoutReadController(WorkoutService workoutService) {
-        this.workoutService = workoutService;
-    }
 
     //READ BY USER
     @GetMapping("user/{userId}/workout/{name}")
@@ -28,10 +26,9 @@ public class WorkoutReadController {
     }
 
     @GetMapping("user/{userId}")
-    public ResponseEntity<Page<WorkoutReadResponse>> findAllByUserId(@PathVariable int userId, Pageable pageable)
+    public ResponseEntity<Page<WorkoutReadResponse>> findAllByUserId(@PathVariable int userId,
+                                                                     Pageable pageable)
     {
         return ResponseEntity.ok(workoutService.findAllByUserId(userId, pageable));
     }
-
-
 }

@@ -1,19 +1,25 @@
 package com.app.yourWorkout.service;
 
-import com.app.yourWorkout.entities.BodyPart;
+import com.app.yourWorkout.DTO.BodyPartDTO;
+import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
+import com.app.yourWorkout.entities.Exercise;
+
+import java.util.List;
 
 public interface BodyPartService {
     //READ
-    BodyPart findById(int id);
-    BodyPart findByName(String name);
+    BodyPartDTO findById(int id);
+    BodyPartDTO findByName(String name);
 
     //DELETE
     void deleteById(int id);
     void deleteByName(String name);
 
     //CREATE
-    BodyPart saveBodyPart(BodyPart bodyPart);
+    BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO);
+
+    ExerciseReadResponse saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names);
 
     //UPDATE
-    BodyPart updateBodyPart(int bodyPartId, BodyPart bodyPart);
+    BodyPartDTO updateBodyPart(int id, BodyPartDTO bodyPartDTO);
 }

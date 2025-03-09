@@ -12,10 +12,11 @@ import java.util.Set;
 
 @Repository
 public interface ExerciseRepository extends JpaRepository<Exercise, Integer> {
-    //READ GENERAL
-    Set<Exercise> findByName(String name);
+    //READ
+    Optional<Exercise> findByName(String name);
 
-    // READ BY WORKOUT ID
-    Optional<Exercise> findByWorkoutAndName(Workout workout, String name);
-    Page<Exercise> findAllByWorkout(Workout workout, Pageable pageable);
+    //DELETE
+    void deleteByName(String name);
+
+    boolean existsByName(String name);
 }

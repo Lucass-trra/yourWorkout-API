@@ -11,10 +11,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,47 +20,38 @@ import java.util.Set;
 @Table(name = "exercise")
 @Getter
 @Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exercise_id")
     private int exerciseId;
 
-    @ManyToOne
-    @JoinColumn(name = "workout_id", nullable = false)
-    private Workout workout;
-
     @Column(name = "exercise_name", unique = true, nullable = false, length = 50)
+    @NonNull
     private String name;
 
     @Lob // Para armazenar GIFs ou imagens em bytea
     @Column(nullable = false, columnDefinition = "BYTEA")
-    private byte[] photo;
+    private byte [] photo;
 
     @ManyToOne
     @JoinColumn(name = "bodypart_id", nullable = false)
+    @NonNull
     private BodyPart primaryBodyPart; // Relacionamento com o músculo principal
 
     @Column(nullable = false, length = 100)
+    @NonNull
     private String equipment;
 
     @Column(nullable = false, length = 100)
+    @NonNull
     private String target;
 
     @Column(nullable = false, columnDefinition = "jsonb")
+    @NonNull
     private String instructions; // Mapeado como String para JSONB
-
-    @Column
-    private Short sets;
-
-    @Column
-    private Short repeats;
-
-    @Column
-    private Short weight;
-
-    @Column(name = "restbetweensets")
-    private LocalTime restBetweenSets;
 
     // Relacionamento muitos para muitos com os músculos secundários
     @ManyToMany
