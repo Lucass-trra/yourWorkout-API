@@ -1,29 +1,23 @@
 package com.app.yourWorkout.service;
 
-import com.app.yourWorkout.DTO.request.exercise.ExerciseCreateRequest;
-import com.app.yourWorkout.DTO.request.exercise.ExerciseUpdateRequest;
+import com.app.yourWorkout.DTO.request.exercise.ExerciseRequest;
 import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.Exercise;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 public interface ExerciseService {
-    //READ GENERAL
-    Exercise findById(int exerciseId);
+    //READ
+    ExerciseReadResponse findById(int id);
 
-    //READ BY WORKOUT ID
-    ExerciseReadResponse findByWorkoutIdAndName(int workoutId, String name);
-    Page<ExerciseReadResponse> findAllByWorkoutId(int workoutId, Pageable pageable);
+    ExerciseReadResponse findByName(String name);
 
-    //DELETE BY WORKOUT ID
-    void deleteByWorkoutId(int exerciseId, int workoutId);
+    //DELETE
+    void deleteById(int id);
 
-    //CREATE BY WORKOUT ID
-    ExerciseReadResponse saveByWorkoutId(int workoutId, ExerciseCreateRequest exerciseRequest);
+    void deleteByName(String name);
 
-    //UPDATE BY WORKOUT ID
-    ExerciseReadResponse updateByWorkoutId(int workoutId,
-                                           int exerciseId,
-                                           ExerciseUpdateRequest exerciseRequest);
+    //CREATE
+    ExerciseReadResponse saveExercise(ExerciseRequest exerciseRequest);
+
+    //UPDATE
+    ExerciseReadResponse updateExercise(int exerciseId, ExerciseRequest exerciseRequest);
 }

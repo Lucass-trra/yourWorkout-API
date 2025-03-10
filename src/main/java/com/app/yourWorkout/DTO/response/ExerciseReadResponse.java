@@ -1,8 +1,8 @@
 package com.app.yourWorkout.DTO.response;
 
 import com.app.yourWorkout.entities.BodyPart;
+import com.app.yourWorkout.entities.Exercise;
 
-import java.time.LocalTime;
 import java.util.Set;
 
 public record ExerciseReadResponse(
@@ -12,10 +12,17 @@ public record ExerciseReadResponse(
         String equipment,
         String target,
         String instructions,
-        short sets,
-        short repeats,
-        short weight,
-        LocalTime restBetweenSets,
         Set<BodyPart> secondaryBodyParts
 ) {
+    public static ExerciseReadResponse from(Exercise exercise) {
+        return new ExerciseReadResponse(
+                exercise.getName(),
+                exercise.getPhoto(),
+                exercise.getPrimaryBodyPart(),
+                exercise.getEquipment(),
+                exercise.getTarget(),
+                exercise.getInstructions(),
+                exercise.getSecondaryBodyParts()
+        );
+    }
 }

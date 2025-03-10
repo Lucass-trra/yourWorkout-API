@@ -1,6 +1,7 @@
 package com.app.yourWorkout.controller.bodyPart;
 
 import com.app.yourWorkout.service.BodyPartService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,12 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/bodyParts")
+@AllArgsConstructor
 public class BodyPartDeleteController {
     private final BodyPartService bodyPartService;
-
-    public BodyPartDeleteController(BodyPartService bodyPartService) {
-        this.bodyPartService = bodyPartService;
-    }
 
     //DELETE
     @DeleteMapping("id/{id}")

@@ -2,8 +2,7 @@ package com.app.yourWorkout.controller.exercise;
 
 import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.service.ExerciseService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,25 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/exercises")
+@AllArgsConstructor
 public class ExerciseReadController {
     private final ExerciseService exerciseService;
 
-    public ExerciseReadController(ExerciseService exerciseService) {
-        this.exerciseService = exerciseService;
-    }
-
     //READ BY WORKOUT ID
-    @GetMapping("workout/{workoutId}/exercise/{name}")
-    public ResponseEntity<ExerciseReadResponse> findByWorkoutIdAndName(@PathVariable int workoutId,
-                                                                       @PathVariable String name)
-    {
-        return ResponseEntity.ok(exerciseService.findByWorkoutIdAndName(workoutId, name));
+    @GetMapping("id/{id}")
+    public ResponseEntity<ExerciseReadResponse> findById(@PathVariable int exerciseId) {
+        return ResponseEntity.ok(exerciseService.findById(exerciseId));
     }
 
-    @GetMapping("workout/{workoutId}/exercises")
-    public ResponseEntity<Page<ExerciseReadResponse>> findAllByWorkoutId(@PathVariable int workoutId,
-                                                                         Pageable pageable)
-    {
-        return ResponseEntity.ok(exerciseService.findAllByWorkoutId(workoutId, pageable));
+    @GetMapping("name/{name}")
+    public ResponseEntity<ExerciseReadResponse> findByName(@PathVariable String name) {
+        return ResponseEntity.ok(exerciseService.findByName(name));
     }
 }

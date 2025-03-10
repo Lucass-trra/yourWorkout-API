@@ -2,6 +2,7 @@ package com.app.yourWorkout.controller.user;
 
 import java.lang.Void;
 import com.app.yourWorkout.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,12 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/user")
+@AllArgsConstructor
 public class UserDeleteController {
     private final UserService userService;
-
-    public UserDeleteController(UserService userService) {
-        this.userService = userService;
-    }
 
     //DELETE
     @DeleteMapping("id/{userId}")

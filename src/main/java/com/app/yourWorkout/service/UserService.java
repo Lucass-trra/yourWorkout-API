@@ -19,5 +19,5 @@ public interface UserService {
     UserReadResponse saveUser(String username, String email, String password);
 
     //UPDATE USER
-    UserReadResponse updateUser(int userId, UserUpdateRequest userRequest);
+    UserReadResponse updateUser(int id, UserUpdateRequest userRequest);
 }
