@@ -31,8 +31,8 @@ public class BodyPartCreateController {
     @PostMapping("secondaryBodyParts/exercise/{id}")
     public ResponseEntity<ExerciseReadResponse> saveSecondaryBodyPartsByExercise(@PathVariable int exerciseId,
                                                                                  @Valid
-                                                                     @RequestBody
-                                                                     List<String> secondaryBodyPartNames)
+                                                                                 @RequestBody
+                                                                                 List<String> secondaryBodyPartNames)
     {
         return ResponseEntity.ok(bodyPartService
                 .saveSecondaryBodyPartsByExercise(exerciseId, secondaryBodyPartNames));
