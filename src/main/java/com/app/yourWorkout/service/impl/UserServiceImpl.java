@@ -3,7 +3,6 @@ package com.app.yourWorkout.service.impl;
 import com.app.yourWorkout.DTO.request.user.UserUpdateRequest;
 import com.app.yourWorkout.DTO.response.UserReadResponse;
 import com.app.yourWorkout.entities.User;
-import com.app.yourWorkout.exception.DataAlreadyExistException;
 import com.app.yourWorkout.exception.DataNotFoundException;
 import com.app.yourWorkout.exception.DuplicateDataException;
 import com.app.yourWorkout.repository.UserRepository;
@@ -77,7 +76,7 @@ class UserServiceImpl implements UserService {
     @Transactional
     public UserReadResponse saveUser(String username, String email, String password) {
         if (userRepository.existsByName(username)) {
-            throw new DataAlreadyExistException("The user with username: " + username + " already exists in the database");
+            throw new DuplicateDataException("The user with username: " + username + " already exists in the database");
         }
 
         return UserReadResponse.from(

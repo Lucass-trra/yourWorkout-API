@@ -4,7 +4,6 @@ import com.app.yourWorkout.DTO.BodyPartDTO;
 import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.BodyPart;
 import com.app.yourWorkout.exception.CollectionEmptyException;
-import com.app.yourWorkout.exception.DataAlreadyExistException;
 import com.app.yourWorkout.exception.DataNotFoundException;
 import com.app.yourWorkout.exception.DuplicateDataException;
 import com.app.yourWorkout.repository.BodyPartRepository;
@@ -63,7 +62,7 @@ class BodyPartServiceImpl implements BodyPartService {
     @Transactional
     public BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO) {
         if(bodyPartRepository.existsByName(bodyPartDTO.name())) {
-            throw new DataAlreadyExistException("the body part: " + bodyPartDTO.name() + " already exist to save in database");
+            throw new DuplicateDataException("the body part: " + bodyPartDTO.name() + " already exist to save in database");
         }
 
         return BodyPartDTO.from(
