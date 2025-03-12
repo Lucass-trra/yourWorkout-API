@@ -14,12 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * @author lucasterra
+ */
 @Service
 @AllArgsConstructor
 class ExerciseServiceImpl implements ExerciseService {
     private final ExerciseRepository exerciseRepository;
 
-    //READ GENERAL
+
+    /**
+     * @author lucasterra
+     * @param exerciseId the id of exercise
+     * @return ExerciseReadResponse
+     * @throws DataNotFoundException if the exercise was not found to get
+     */
     @Override
     @Transactional
     public ExerciseReadResponse findById(int exerciseId) {
@@ -28,6 +37,12 @@ class ExerciseServiceImpl implements ExerciseService {
                 .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found"));
     }
 
+    /**
+     * @author lucasterra
+     * @param name the name of exercise
+     * @return ExerciseReadResponse
+     * @throws DataNotFoundException if the exercise was not found to get
+     */
     @Override
     public ExerciseReadResponse findByName(String name) {
         return exerciseRepository.findByName(name)
@@ -35,17 +50,27 @@ class ExerciseServiceImpl implements ExerciseService {
                 .orElseThrow(() -> new DataNotFoundException("the exercise: " + name + " was not found"));
     }
 
+    /**
+     * @author lucasterra
+     * @param exerciseId the id of exercise
+     * @throws DataNotFoundException if the exercise was not found to delete
+     */
     @Override
     @Transactional
-    public void deleteById(int id) {
-        exerciseRepository.findById(id).ifPresentOrElse(
+    public void deleteById(int exerciseId) {
+        exerciseRepository.findById(exerciseId).ifPresentOrElse(
                 exerciseRepository::delete,
                 () -> {
-                    throw new DataNotFoundException("the exercise: " + id + " was not found to delete");
+                    throw new DataNotFoundException("the exercise: " + exerciseId + " was not found to delete");
                 }
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param name the name of exercise
+     * @throws DataNotFoundException if the exercise was not found to delete
+     */
     @Override
     @Transactional
     public void deleteByName(String name) {
@@ -57,6 +82,12 @@ class ExerciseServiceImpl implements ExerciseService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param exerciseRequest the DTO request to save an exercise
+     * @return ExerciseReadResponse
+     * @throws DuplicateDataException if the exercise already exists
+     */
     @Override
     @Transactional
     public ExerciseReadResponse saveExercise(ExerciseRequest exerciseRequest) {
@@ -78,6 +109,14 @@ class ExerciseServiceImpl implements ExerciseService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param exerciseId the id of exercise
+     * @param exerciseRequest the DTO request to save an exercise
+     * @return ExerciseReadResponse
+     * @throws DataNotFoundException if exercise was not found to update
+     * @throws DuplicateDataException if the exercise from DTO has the same name of one exercise that already exists
+     */
     @Override
     @Transactional
     public ExerciseReadResponse updateExercise(int exerciseId, ExerciseRequest exerciseRequest) {

@@ -1,5 +1,6 @@
 package com.app.yourWorkout.service;
 
+import com.app.yourWorkout.DTO.request.user.UserCreateRequest;
 import com.app.yourWorkout.DTO.request.user.UserUpdateRequest;
 import com.app.yourWorkout.DTO.response.UserReadResponse;
 import com.app.yourWorkout.entities.User;
@@ -16,7 +17,7 @@ public interface UserService {
     void deleteByEmail(String email);
 
     //CREATE USER
-    UserReadResponse saveUser(String username, String email, String password);
+    UserReadResponse saveUser(UserCreateRequest userRequest);
 
     //UPDATE USER
     UserReadResponse updateUser(int id, UserUpdateRequest userRequest);

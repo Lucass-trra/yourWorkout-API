@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+/**
+ * @author lucasterra
+ */
 @Service
 @AllArgsConstructor
 public class WorkoutExerciseImpl implements WorkoutExerciseService {
@@ -22,6 +25,14 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
+    /**
+     * verify witch fields are not null to compose the workoutExercise object
+     *
+     * @author lucasterra
+     * @param workoutExercise the entity workoutExercise representing association between workout and exercise
+     * @param workoutExerciseRequest the DTO request of workoutExercise
+     * @return WorkoutExercise
+     */
     private WorkoutExercise verifyPossibleNullFields(WorkoutExercise workoutExercise,
                                                      WorkoutExerciseRequest workoutExerciseRequest)
     {
@@ -33,6 +44,14 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
         return workoutExercise;
     }
 
+    /**
+     * verify witch exactly error occurred after a fail request
+     *
+     * @author lucasterra
+     * @param workoutId the ID of workout
+     * @param exerciseId the ID of exercise
+     * @throws DataNotFoundException if workout or exercise or both was not found
+     */
     private void verifyEntityExistence(int workoutId, int exerciseId) {
         boolean workoutExists = workoutRepository.existsById(workoutId);
         boolean exerciseExists = exerciseRepository.existsById(exerciseId);
@@ -49,6 +68,13 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
         }
     }
 
+    /**
+     * @author lucasterra
+     * @param workoutId the ID of workout
+     * @param exerciseId the ID of exercise
+     * @return WorkoutExerciseReadResponse
+     * @throws DataNotFoundException if the exercise or workout or the association between they are not found
+     */
     @Override
     public WorkoutExerciseReadResponse findByWorkoutAndExercise(int workoutId, int exerciseId) {
         var workoutExerciseId = new WorkoutExerciseId(workoutId, exerciseId);
@@ -61,6 +87,12 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
                     });
     }
 
+    /**
+     * @author lucasterra
+     * @param workoutId the ID of workout
+     * @param exerciseId the ID of exercise
+     * @throws DataNotFoundException if the exercise or workout or the association between they are not found
+     */
     @Override
     @Transactional
     public void deleteByWorkoutAndExercise(int workoutId, int exerciseId) {
@@ -75,6 +107,15 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param workoutId the ID of workout
+     * @param exerciseId the ID of exercise
+     * @param workoutExerciseRequest the DTO of workoutExercise association to save
+     * @return WorkoutExerciseReadResponse
+     * @throws DataNotFoundException if the exercise or workout are not found
+     * @throws DuplicateDataException if a workoutExercise association already exists
+     */
     @Override
     @Transactional
     public WorkoutExerciseReadResponse saveWorkoutExercise(int workoutId, int exerciseId, WorkoutExerciseRequest workoutExerciseRequest) {
@@ -99,6 +140,14 @@ public class WorkoutExerciseImpl implements WorkoutExerciseService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param workoutId the ID of workout
+     * @param exerciseId the ID of exercise
+     * @param workoutExerciseRequest the DTO of workoutExercise association to update
+     * @return WorkoutExerciseReadResponse
+     * @throws DataNotFoundException if the exercise or workout or association between they are not found
+     */
     @Override
     @Transactional
     public WorkoutExerciseReadResponse updateWorkoutExercise(int workoutId, int exerciseId, WorkoutExerciseRequest workoutExerciseRequest) {

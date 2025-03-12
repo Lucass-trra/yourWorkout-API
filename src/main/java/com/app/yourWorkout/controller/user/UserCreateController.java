@@ -20,11 +20,6 @@ public class UserCreateController {
     public ResponseEntity<UserReadResponse> saveUser(@Valid @RequestBody UserCreateRequest userRequest){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userService.saveUser(
-                            userRequest.name(),
-                            userRequest.email(),
-                            userRequest.password()
-                        )
-                );
+                .body(userService.saveUser(userRequest));
     }
 }

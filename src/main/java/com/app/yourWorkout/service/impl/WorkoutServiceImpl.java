@@ -17,30 +17,48 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+/**
+ * @author lucasterra
+ */
 @Service
 @AllArgsConstructor
 class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
 
+    /**
+     * auxiliary method to get the user, reducing coding repeat
+     * @author lucasterra
+     * @param userId id from user
+     * @return User
+     * @throws DataNotFoundException if the user was not found to get
+     */
     private User getUserById(int userId) {
         return userRepository.findById(userId)
                 .orElseThrow(()-> new DataNotFoundException("the user: " + userId + " was not found"));
     }
 
-    //READ GENERAL
+    /**
+     * @author lucasterra
+     * @param id the ID of workout
+     * @return WorkoutReadResponse
+     * @throws DataNotFoundException if the exercise was not found to get
+     */
     @Override
-    @Transactional(readOnly = true)
     public WorkoutReadResponse findById(int id) {
         return workoutRepository.findById(id)
                 .map(WorkoutReadResponse::from)
                 .orElseThrow(()-> new DataNotFoundException("the workout: " + id + " was not found"));
     }
 
-    //READ BY USER
+    /**
+     * @author lucasterra
+     * @param userId the ID of user
+     * @param name the name of workout
+     * @return WorkoutReadResponse
+     * @throws DataNotFoundException if the workout was not found for user specified to get
+     */
     @Override
-    @Transactional(readOnly = true)
     public WorkoutReadResponse findByUserIdAndName(int userId, String name) {
         var user = getUserById(userId);
 
@@ -49,8 +67,14 @@ class WorkoutServiceImpl implements WorkoutService {
                 .orElseThrow(()-> new DataNotFoundException("the workout: " + name + " was not found for user: " + userId));
     }
 
+    /**
+     * @author lucasterra
+     * @param userId the ID of user
+     * @param pageable the possible query strings to paginate the list of workouts by user
+     * @return Page&lt;WorkoutReadResponse&gt;
+     * @throws CollectionEmptyException if the page of workouts by user was empty
+     */
     @Override
-    @Transactional(readOnly = true)
     public Page<WorkoutReadResponse> findAllByUserId(int userId, Pageable pageable) {
         var user = getUserById(userId);
         var workoutPage = workoutRepository.findAllByUser(user, pageable);
@@ -62,7 +86,12 @@ class WorkoutServiceImpl implements WorkoutService {
         return workoutPage.map(WorkoutReadResponse::from);
     }
 
-    //DELETE BY USER
+    /**
+     * @author lucasterra
+     * @param userId the ID of user
+     * @param workoutId the ID of workout
+     * @throws DataNotFoundException if the workout was not found for user specified to delete
+     */
     @Override
     @Transactional
     public void deleteByUserId(int userId, int workoutId) {
@@ -76,7 +105,13 @@ class WorkoutServiceImpl implements WorkoutService {
         );
     }
 
-    //CREATE BY USER
+    /**
+     * @author lucasterra
+     * @param userId the ID of user
+     * @param workoutRequest the DTO request from workout to save a new workout by user
+     * @return WorkoutReadResponse
+     * @throws DuplicateDataException if the workout already exists by user
+     */
     @Override
     @Transactional
     public WorkoutReadResponse saveByUserId(int userId, WorkoutCreateRequest workoutRequest) {
@@ -94,7 +129,15 @@ class WorkoutServiceImpl implements WorkoutService {
         );
     }
 
-    //UPDATE BY USER
+    /**
+     * @author lucasterra
+     * @param userId the ID of user
+     * @param workoutId the ID of workout
+     * @param workoutRequest the DTO request from workout to update an existing workout by user
+     * @return WorkoutReadResponse
+     * @throws DataNotFoundException if the workout was not found by user
+     * @throws DuplicateDataException if the workout from DTO has the same name of one workout that already exists by user
+     */
     @Override
     @Transactional
     public WorkoutReadResponse updateByUserId(int userId, int workoutId, WorkoutUpdateRequest workoutRequest) {
