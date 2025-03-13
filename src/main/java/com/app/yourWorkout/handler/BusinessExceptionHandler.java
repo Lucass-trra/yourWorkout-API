@@ -35,11 +35,11 @@ public class BusinessExceptionHandler extends ResponseEntityExceptionHandler{
     public ResponseEntity<ResponseErrorBusiness> handleCollectionEmptyException(CollectionEmptyException ex,
                                                                                 ServletWebRequest servletWebRequest) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.CONFLICT)
                 .body(
                         new ResponseErrorBusiness(
-                                HttpStatus.NOT_FOUND.value(),
-                                HttpStatus.NOT_FOUND.name(),
+                                HttpStatus.CONFLICT.value(),
+                                HttpStatus.CONFLICT.name(),
                                 ex.getClass().getName(),
                                 servletWebRequest.getContextPath(),
                                 ex.getMessage()

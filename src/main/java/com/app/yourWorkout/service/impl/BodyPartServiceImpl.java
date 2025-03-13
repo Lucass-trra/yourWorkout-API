@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -74,7 +75,7 @@ class BodyPartServiceImpl implements BodyPartService {
 
     @Override
     @Transactional
-    public ExerciseReadResponse saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names) {
+    public Set<BodyPartDTO> saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names) {
         return exerciseRepository.findById(exerciseId)
                 .map(exercise -> {
                     if(names.isEmpty())
@@ -87,9 +88,8 @@ class BodyPartServiceImpl implements BodyPartService {
 
                     exercise.getSecondaryBodyParts().addAll(secondaryBodyParts);
 
-                    return ExerciseReadResponse.from(
-                            exerciseRepository.save(exercise)
-                    );
+                    return BodyPartDTO.fromSet(exerciseRepository.save(exercise).getSecondaryBodyParts());
+
                 })
                 .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found"));
     }

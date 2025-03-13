@@ -5,6 +5,7 @@ import com.app.yourWorkout.DTO.response.ExerciseReadResponse;
 import com.app.yourWorkout.entities.Exercise;
 
 import java.util.List;
+import java.util.Set;
 
 public interface BodyPartService {
     //READ
@@ -18,7 +19,7 @@ public interface BodyPartService {
     //CREATE
     BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO);
 
-    ExerciseReadResponse saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names);
+    Set<BodyPartDTO> saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names);
 
     //UPDATE
     BodyPartDTO updateBodyPart(int id, BodyPartDTO bodyPartDTO);
