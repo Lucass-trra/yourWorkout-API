@@ -16,12 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author lucasterra
+ */
 @Service
 @AllArgsConstructor
 class BodyPartServiceImpl implements BodyPartService {
     private final BodyPartRepository bodyPartRepository;
     private final ExerciseRepository exerciseRepository;
 
+    /**
+     * @author lucasterra
+     * @param id the id of bodyPart
+     * @return BodyPartDTO
+     * @throws  DataNotFoundException when bodyPart was not found to get
+     */
     @Override
     public BodyPartDTO findById(int id) {
         return bodyPartRepository.findById(id)
@@ -29,6 +38,12 @@ class BodyPartServiceImpl implements BodyPartService {
                 .orElseThrow(()-> new DataNotFoundException("the body part: " + id + " was not found"));
     }
 
+    /**
+     * @author lucasterra
+     * @param name the name of bodyPart
+     * @return BodyPartDTO
+     * @throws  DataNotFoundException if the bodyPart was not found to get
+     */
     @Override
     public BodyPartDTO findByName(String name) {
         return bodyPartRepository.findByName(name)
@@ -36,6 +51,11 @@ class BodyPartServiceImpl implements BodyPartService {
                 .orElseThrow(()-> new DataNotFoundException("the body part: " + name + " was not found"));
     }
 
+    /**
+     * @author lucasterra
+     * @param id the ID of bodyPart
+     * @throws  DataNotFoundException if the bodyPart was not found to delete
+     */
     @Override
     @Transactional
     public void deleteById(int id) {
@@ -47,6 +67,11 @@ class BodyPartServiceImpl implements BodyPartService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param name the name of bodyPart
+     * @throws  DataNotFoundException if the bodyPart was not found to delete
+     */
     @Override
     @Transactional
     public void deleteByName(String name) {
@@ -58,6 +83,12 @@ class BodyPartServiceImpl implements BodyPartService {
        );
     }
 
+    /**
+     * @author lucasterra
+     * @param bodyPartDTO the DTO request used to save a new bodyPart
+     * @return BodyPartDTO
+     * @throws DuplicateDataException if the bodyPart already exists
+     */
     @Override
     @Transactional
     public BodyPartDTO saveBodyPart(BodyPartDTO bodyPartDTO) {
@@ -72,6 +103,14 @@ class BodyPartServiceImpl implements BodyPartService {
         );
     }
 
+    /**
+     * @author lucasterra
+     * @param exerciseId the ID from exercise
+     * @param names the names of secondary bodyParts for exercise requested
+     * @return ExerciseReadResponse
+     * @throws CollectionEmptyException if the secondary bodyParts names from param or the list of bodyParts caught is empty
+     * @throws DataNotFoundException if the exercise was not found to get its secondary bodyPart
+     */
     @Override
     @Transactional
     public ExerciseReadResponse saveSecondaryBodyPartsByExercise(int exerciseId, List<String> names) {
@@ -94,6 +133,14 @@ class BodyPartServiceImpl implements BodyPartService {
                 .orElseThrow(() -> new DataNotFoundException("the exercise: " + exerciseId + " was not found"));
     }
 
+    /**
+     * @author lucasterra
+     * @param id the ID from BodyPart
+     * @param bodyPartDTO the DTO request used to update an existing bodyPart
+     * @return BodyPartDTO
+     * @throws DataNotFoundException if the bodyPart was not found to update
+     * @throws DuplicateDataException if the bodyPart DTO has the same name of one bodyPart that already exists
+     */
     @Override
     @Transactional
     public BodyPartDTO updateBodyPart(int id, BodyPartDTO bodyPartDTO) {
