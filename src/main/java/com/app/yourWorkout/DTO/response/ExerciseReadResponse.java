@@ -1,7 +1,6 @@
 package com.app.yourWorkout.DTO.response;
 
 import com.app.yourWorkout.DTO.BodyPartDTO;
-import com.app.yourWorkout.entities.BodyPart;
 import com.app.yourWorkout.entities.Exercise;
 
 import java.util.Set;
