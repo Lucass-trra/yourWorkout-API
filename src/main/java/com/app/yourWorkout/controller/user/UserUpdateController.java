@@ -85,6 +85,24 @@ public class UserUpdateController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflict - User with the given name already exists",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseErrorBusiness.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                        "statusCode": 409,
+                                        "errorMessage": "conflict",
+                                        "exceptionClassName": "com.app.yourWorkout.exception.DuplicateDataException",
+                                        "path": "",
+                                        "exceptionMessage": "The user with username: john_doe already exists in the database",
+                                        "timestamp": "2025-03-14T12:00:00.000Z"
+                                    }
+                                    """)
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "404",
                     description = "Not Found - User with the given ID does not exist",
                     content = @Content(
